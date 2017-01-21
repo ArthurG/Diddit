@@ -1,0 +1,3 @@
+ACCESS_TOKEN = ""
+NEWSBOT_WEBSITE = ''
+DEBUG = False
