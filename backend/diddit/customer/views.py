@@ -1,12 +1,13 @@
 from flask import request
 import sys
-#sys.path.append('../models.py')
 from ..models import User
 from flask_sqlalchemy import SQLAlchemy
 import json 
 import requests
 from . import customer
 from database import db
+
+
 
 @customer.route('/login', methods=['POST'])
 def login():
@@ -41,17 +42,16 @@ def signup():
     	storename = data['storename']
     	userName = data['username']
     	password = data['password']
-    	'''
+    	
     	Users = User.query.all().filter(User.username == userName)
     		for aUser in Users:
     			if (aUser.username == userName) and (aUser.storename == storename):
     				return "user already registered", 400
-		'''
+		
     	temp = User(location, storename, userName, password)
     	db.session.add(temp)
     	db.session.commit()
-
-    return "ok", 200
+    	return "ok", 200
 
 
 def log(message):  # simple wrapper for logging to stdout on heroku
