@@ -1,4 +1,4 @@
-import feedparser
+#import feedparser
 #from newspaper import Article
 
 def getOneArticle(feed="http://feeds.reuters.com/Reuters/worldNews", entryNumber=0):
