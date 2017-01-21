@@ -1,6 +1,7 @@
-from diddit import db
 from diddit.models import User
-arthur = User("100 King street west M5X 1E3", "foo", "bar")
+from diddit import db
+
+arthur = User("100 King street west M5X 1E3", "bmo", "foo", "bar")
 
 db.session.add(arthur)
 db.session.commit()
