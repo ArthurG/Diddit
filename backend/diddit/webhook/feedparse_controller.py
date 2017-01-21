@@ -1,5 +1,5 @@
 import feedparser
-from newspaper import Article
+#from newspaper import Article
 
 def getOneArticle(feed="http://feeds.reuters.com/Reuters/worldNews", entryNumber=0):
     d = feedparser.parse(feed)
@@ -7,7 +7,7 @@ def getOneArticle(feed="http://feeds.reuters.com/Reuters/worldNews", entryNumber
         return False, entryNumber
 
     url = d['entries'][entryNumber].link
-    article = Article(url)
+    article = ""
     article.download()
     article.parse()
     article.nlp()

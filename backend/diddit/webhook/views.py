@@ -2,6 +2,7 @@ from flask import request
 from . import webhook
 import sys
 from . import message_sender
+from . import message_controller
 
 
 @webhook.route('/webhook', methods=['GET'])
@@ -29,9 +30,9 @@ def processWebhook():
 
         for entry in data["entry"]:
             for messaging_event in entry["messaging"]:
-                message_sender.text_message(messaging_event['sender']['id'], messaging_event['message']['text'])
-                print(messaging_event['sender']['id'], messaging_event['message']['text'])
-                #message_controller.route(messaging_event)
+                #message_sender.text_message(messaging_event['sender']['id'], messaging_event['message']['text'])
+                #print(messaging_event['sender']['id'], messaging_event['message']['text'])
+                message_controller.route(messaging_event)
     return "ok", 200
 
 def log(message):  # simple wrapper for logging to stdout on heroku
