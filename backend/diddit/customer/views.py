@@ -34,19 +34,54 @@ def login():
 	return "unauthorized", 401 
 
 
+
+'''
+{
+	"username" : "Harman"
+}
+'''
 # return json of answers to each question  
 @customer.route('/answers', methods=['GET'])
 def answers():
 	data = request.get_json(force=True)
-	#
+
+	if('username' in data ):
+
+		Users = User.query.all()
+		userName = data['username']
+		Users = [i for i in Users if i.username == userName]
+		uID = Users[0].id
+
+		Surveys = Survey.query.all()
+		Surveys = [i for i in Surveys if i.user_name == uID]
+		surveyID = Surveys[0].id
+		
+		SurveyQ = Surveyquestion.query.all()
+		SurveyQ = [i for i in SurveyQ if i.survey_name == surveyID]
+		idS = []
+		for a in SurveyQ:
+			idS.append(a.id)
+
+		Answers = Surveyquestionanswer.query.all()
+		# Answers = [b for b in Answers if b.Surveyquestion_name == ] 
 
 
+
+
+
+
+
+	
+'''
+{
+	"username" : "Harman"
+}
+'''
 # return json which contains survey questions 
 @customer.route('/survey', methods=['GET'])
 def survey():
 	data = request.get_json(force=True)
-	#
-
+	
 
 
 '''
