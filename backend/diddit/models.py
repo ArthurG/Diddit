@@ -30,6 +30,9 @@ class Survey(db.Model):
     survey_name = db.Column(db.String(500), nullable = False)
     user_name = db.Column(db.Integer, db.ForeignKey('user.id'))
     user=db.relationship('User', backref=db.backref('surveys', lazy='dynamic'))
+    def __init__(self, survey_name, uid):
+        self.survey_name = survey_name
+        self.user_name = uid
 
 class Surveyquestion(db.Model):
     id = db.Column(db.Integer, nullable=False, unique=True, primary_key=True)
@@ -37,11 +40,18 @@ class Surveyquestion(db.Model):
     questionType = db.Column(db.String(500), nullable = False)
     survey_name = db.Column(db.Integer, db.ForeignKey('survey.id'))
     survey=db.relationship('Survey', backref=db.backref('questions', lazy='dynamic'))
+    def __init__(self, questionName, questionType, surveyid):
+        self.questionName = questionName
+        self.questionType = questionType
+        self.survey_name = surveyid
 
-class SurveyQuestionAnswer(db.Model):
+class Surveyquestionanswer(db.Model):
     id = db.Column(db.Integer, nullable=False, unique=True, primary_key=True)
     answerString = db.Column(db.String(500), nullable = False)
     surveyquestion_name = db.Column(db.Integer, db.ForeignKey('surveyquestion.id'))
     surveyquestion=db.relationship('Surveyquestion', backref=db.backref('answers', lazy='dynamic'))
+    def __init__(self, ans, questionid):
+        self.answerString = ans
+        self.surveyquestion_name = questionid
 
 db.create_all()
