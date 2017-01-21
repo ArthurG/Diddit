@@ -1,10 +1,13 @@
-import message_handler
-import message_sender
-import feedparse_controller
-from keys import NEWSBOT_WEBSITE
+from . import message_handler
+from . import message_sender
+from . import feedparse_controller
+from .dist import dist
+from ..models import Survey
+
 
 #Routes the messaging event to the correct handler to handle the message
 def route(messaging_event):
+    
     if not messaging_event:  # someone sent us a message
         return
 
@@ -12,11 +15,11 @@ def route(messaging_event):
     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     #message_text = messaging_event["message"]["text"]  # the message's text
 
-    if message_controller.sent_location(messaging_event['message']):
-        send_survey(messaging_event['message'], sender_id)
-    elif message_controller.answer_question(messaging_event['message']):
-        process_question(messaging_event['message'], sender_id)
-        send_question(messaging_event['message'], sender_id)
+    if get_location(messaging_event['message']):
+        start_survey(messaging_event['message'], sender_id)
+    elif did_answer_question(messaging_event['message']):
+        process_answer(messaging_event['message'], sender_id)
+        send_next_question(messaging_event['message'], sender_id)
 
     if messaging_event.get("delivery"):  # delivery confirmation
         pass
@@ -27,6 +30,33 @@ def route(messaging_event):
     if messaging_event.get("postback"):  # user clicked/tapped "postback" button in earlier message
         pass
 
+
+#Check if has location
+def get_location(msg):
+    if msg.get('attachments', False) and msg['attachments'][0]['type'] == "location":
+        return msg['attachments'][0]['payload']['coordinates']
+        #{'lat': xxx, 'long': xxx}
+    return False
+
+def start_survey(msg, sender):
+    loc = get_location(msg)
+    allSurveys = Survey.query.all()
+    allSurveys = [i for i in allSurveys if dist(loc['long'], loc['lat'], i.user.lng, i.user.lat) <= 0.5]
+    if len(allSurveys) == 0:
+        message_sender.text_message(sender, "I do not have a survey for you at the moment. Please make sure you're within distance of a participating store")
+    else:
+        message_sender.text_message(sender, allSurveys[0].questions[0].questionName)
+    print("starting survey")
+
+def process_answer(msg, sender):
+    print("Processing answer")
+
+def send_next_question(msg, sender):
+    print("Processing answer")
+
+def did_answer_question(msg):
+    return True
+        
 
 #Controller to handle default messages
 def get_article(message, sender_id):
