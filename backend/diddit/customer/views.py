@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 import json 
 import requests
 from . import customer
+from database import db
 
 @customer.route('/login', methods=['POST'])
 def login():

@@ -12,14 +12,11 @@ def route(messaging_event):
     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     #message_text = messaging_event["message"]["text"]  # the message's text
 
-    if message_handler.want_another_article(messaging_event['message']):
-        get_next_message(messaging_event['message'], sender_id)
-    elif message_handler.want_full_article(messaging_event['message']):
-        get_full_article(messaging_event['message'], sender_id)
-    elif message_handler.want_article(messaging_event['message']):
-        get_article(messaging_event['message'], sender_id)
-    else:
-        get_introduction(messaging_event['message'], sender_id)
+    if message_controller.sent_location(messaging_event['message']):
+        send_survey(messaging_event['message'], sender_id)
+    elif message_controller.answer_question(messaging_event['message']):
+        process_question(messaging_event['message'], sender_id)
+        send_question(messaging_event['message'], sender_id)
 
     if messaging_event.get("delivery"):  # delivery confirmation
         pass

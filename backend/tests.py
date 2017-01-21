@@ -1,5 +1,9 @@
 from diddit.models import User, Survey, Surveyquestion, Surveyquestionanswer
-from diddit import db
+from diddit import *
+from diddit.database import db
+from diddit.run import create_app
+
+create_app()
 
 arthur = User("100 King street west M5X 1E3", "bmo", "foo", "bar")
 
