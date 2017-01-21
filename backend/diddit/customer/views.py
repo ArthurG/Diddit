@@ -63,7 +63,7 @@ def answers():
 			idS.append(a.id)
 
 		Answers = Surveyquestionanswer.query.all()
-		Answers = [b for b in Answers if b.Surveyquestion_name == ] 
+		# Answers = [b for b in Answers if b.Surveyquestion_name == ] 
 
 
 
