@@ -54,3 +54,9 @@ class Surveyquestionanswer(db.Model):
         self.answerString = ans
         self.surveyquestion_name = questionid
 
+class UserSurveyStates(db.Model):
+    id = db.Column(db.Integer, nullable=False, unique=True, primary_key=True)
+    questionState=db.Column(db.Integer, nullable=False) #0 => not asked 1 => previously asked 2 => never asked
+    surveyId=db.Column(db.Integer, db.ForeignKey('survey.id'))
+    questionId=db.Column(db.Integer, db.ForeignKey('question.id'))
+
