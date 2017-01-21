@@ -50,7 +50,7 @@ def start_survey(msg, sender):
     print("starting survey")
 
 def start_questioning(sender, survey):
-    db.create_all()
+    #db.create_all()
     for question in survey.questions:
         tmpState = Usersurveystates(question.id, survey.id, sender)
         db.session.add(tmpState)
