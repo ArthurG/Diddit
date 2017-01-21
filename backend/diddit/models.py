@@ -24,6 +24,7 @@ class User(db.Model):
         self.lng = latlng['lng']
         self.username = username
         self.password = password
+        print(self.location, self.store_name, self.lat, self.lng, self.username, self.password)
 
 class Survey(db.Model):
     id = db.Column(db.Integer, nullable=False, unique=True, primary_key=True)
