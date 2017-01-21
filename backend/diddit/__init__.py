@@ -8,4 +8,4 @@ diddit.config['SQLALCHEMY_DATABASE_URI']="sqlite:///diddit.db3"
 diddit.register_blueprint(webhook)
 diddit.register_blueprint(customer)
 
-db = SQLAlchemy(diddit)
+#db = SQLAlchemy(diddit)

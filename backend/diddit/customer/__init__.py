@@ -1,10 +1,10 @@
 from flask import Blueprint
 
 customer = Blueprint(
-        'profile',
+        'customer',
         __name__,
         template_folder='templates',
         static_folder='static'
 )
 
-#from . import views
+from . import views

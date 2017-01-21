@@ -1,7 +1,7 @@
 from flask import Flask
 import json
 from flask_sqlalchemy import SQLAlchemy
-from diddit import db
+from database import db
 import requests
 
 class User(db.Model):
@@ -54,4 +54,3 @@ class Surveyquestionanswer(db.Model):
         self.answerString = ans
         self.surveyquestion_name = questionid
 
-db.create_all()

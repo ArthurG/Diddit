@@ -4,13 +4,14 @@ import sys
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
 
-def setup_database(app):
-    with app.app_context():
-        db = SQLAlchemy()
-        db.create_al()
-    
+def create_app():
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///diddit.db"
+    from database import db
+    db.init_app(app)
+
+
 
 def log(message):  # simple wrapper for logging to stdout on heroku
     print(str(message))
@@ -18,5 +19,5 @@ def log(message):  # simple wrapper for logging to stdout on heroku
 
 
 if __name__ == '__main__':
+    create_app()
     app.run(debug=True)
-    setup_database(app)

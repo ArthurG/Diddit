@@ -1,29 +1,15 @@
 from flask import request
-from . import webhook
 import sys
-from . import message_sender
-sys.path.append('../models.py')
-from models import User
+#sys.path.append('../models.py')
+from ..models import User
 from flask_sqlalchemy import SQLAlchemy
 import json 
 import requests
+from . import customer
 
-
-@webhook.route('/webhook', methods=['GET'])
-def verify():
-    # when the endpoint is registered as a webhook, it must echo back
-    # the 'hub.challenge' value it receives in the query arguments
-    if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-        if not request.args.get("hub.verify_token") == "WeDiddit":
-            return "Verification token mismatch", 403
-        return request.args["hub.challenge"], 200
-
-    return "Hello world", 200
-
-
-
-@webhook.route('/login', methods=['GET'])
+@customer.route('/login', methods=['GET'])
 def login():
+    print("loggin in")
 
 	# endpoint for processing incoming messaging events
     data = request.get_json()
@@ -42,7 +28,7 @@ def login():
 
 
 
-@webhook.route('/signup', methods=['POST'])
+@customer.route('/signup', methods=['POST'])
 def signup():
     # endpoint for processing incoming messaging events
     data = request.get_json()
