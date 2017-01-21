@@ -7,12 +7,12 @@ import json
 import requests
 from . import customer
 
-@customer.route('/login', methods=['GET'])
+@customer.route('/login', methods=['POST'])
 def login():
     print("loggin in")
 
 	# endpoint for processing incoming messaging events
-    data = request.get_json()
+    data = request.get_json(force=True)
     log("incoming msg " + str(data))
 
     userName = data['username']
@@ -31,7 +31,7 @@ def login():
 @customer.route('/signup', methods=['POST'])
 def signup():
     # endpoint for processing incoming messaging events
-    data = request.get_json()
+    data = request.get_json(force=True)
     log("incoming msg " + str(data))  # you may not want to log every incoming message in production, but it's good for testing
 
     # endpoint for signups
