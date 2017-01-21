@@ -55,9 +55,17 @@ class Surveyquestionanswer(db.Model):
         self.answerString = ans
         self.surveyquestion_name = questionid
 
-class UserSurveyStates(db.Model):
+class Usersurveystates(db.Model):
     id = db.Column(db.Integer, nullable=False, unique=True, primary_key=True)
     questionState=db.Column(db.Integer, nullable=False) #0 => not asked 1 => previously asked 2 => never asked
-    surveyId=db.Column(db.Integer, db.ForeignKey('survey.id'))
-    questionId=db.Column(db.Integer, db.ForeignKey('question.id'))
+    surveyId=db.Column(db.Integer, db.ForeignKey('survey.id'), nullable=False)
+    questionId=db.Column(db.Integer, db.ForeignKey('surveyquestion.id'), nullable=False)
+    respondantFbId=db.Column(db.Integer, nullable=False)
+    surveyquestion=db.relationship('Surveyquestion', backref=db.backref('states', lazy='dynamic'))
+    survey=db.relationship('Survey', backref=db.backref('states', lazy='dynamic'))
+    def __init__(self, questionid, surveyid, respondantFbId):
+        self.questionState = 0
+        self.questionId = questionid
+        self.surveyId = surveyid
+        self.respondantFbId = respondantFbId
 

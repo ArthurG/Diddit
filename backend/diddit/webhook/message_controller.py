@@ -2,7 +2,8 @@ from . import message_handler
 from . import message_sender
 from . import feedparse_controller
 from .dist import dist
-from ..models import Survey
+from ..models import Survey, Usersurveystates
+from database import db
 
 
 #Routes the messaging event to the correct handler to handle the message
@@ -17,9 +18,9 @@ def route(messaging_event):
 
     if get_location(messaging_event['message']):
         start_survey(messaging_event['message'], sender_id)
-    elif did_answer_question(messaging_event['message']):
+    elif did_answer_question(messaging_event['message'], sender_id):
         process_answer(messaging_event['message'], sender_id)
-        send_next_question(messaging_event['message'], sender_id)
+        send_next_question(sender_id)
 
     if messaging_event.get("delivery"):  # delivery confirmation
         pass
@@ -43,19 +44,38 @@ def start_survey(msg, sender):
     allSurveys = Survey.query.all()
     allSurveys = [i for i in allSurveys if dist(loc['long'], loc['lat'], i.user.lng, i.user.lat) <= 0.5]
     if len(allSurveys) == 0:
-        message_sender.text_message(sender, "I do not have a survey for you at the moment. Please make sure you're within distance of a participating store")
+        message_sender.text_message(sender, "I do not have a survey for you at the moment. Please make sure you're within distance of a participating location")
     else:
-        message_sender.text_message(sender, allSurveys[0].questions[0].questionName)
+        start_questioning(sender, allSurveys[0])
     print("starting survey")
+
+def start_questioning(sender, survey):
+    db.create_all()
+    for question in survey.questions:
+        tmpState = Usersurveystates(question.id, survey.id, sender)
+        db.session.add(tmpState)
+    db.session.commit()
+    send_next_question(sender)
+    print("Starting questioning")
+
 
 def process_answer(msg, sender):
     print("Processing answer")
 
-def send_next_question(msg, sender):
-    print("Processing answer")
+def send_next_question(sender):
+    q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=0).first()
+    q1.questionState = 1
+    db.session.commit()
+    message_sender.text_message(sender, q1.surveyquestion.questionName)
+    print("Starting questioning")
 
-def did_answer_question(msg):
-    return True
+def did_answer_question(msg, sender):
+    q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=0).first()
+    q1.questionState = 1
+    db.session.commit()
+    message_sender.text_message(sender, q1.surveyquestion.questionName)
+    print("Answering question")
+
         
 
 #Controller to handle default messages
