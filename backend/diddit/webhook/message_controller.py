@@ -18,7 +18,7 @@ def route(messaging_event):
 
     if get_location(messaging_event['message']):
         start_survey(messaging_event['message'], sender_id)
-    elif did_answer_question(messaging_event['message']):
+    elif did_answer_question(messaging_event['message'], sender_id):
         process_answer(messaging_event['message'], sender_id)
         send_next_question(sender_id)
 
@@ -69,7 +69,7 @@ def send_next_question(sender):
     message_sender.text_message(sender, q1.surveyquestion.questionName)
     print("Starting questioning")
 
-def did_answer_question(msg):
+def did_answer_question(msg, sender):
     q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=0).first()
     q1.questionState = 1
     db.session.commit()

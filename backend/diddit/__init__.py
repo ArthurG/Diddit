@@ -6,7 +6,7 @@ from .customer import customer
 from database import db
 
 diddit = Flask (__name__)
-cors(diddit)
+CORS(diddit)
 diddit.config['SQLALCHEMY_DATABASE_URI']="sqlite:///diddit.db3"
 diddit.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 diddit.register_blueprint(webhook)
