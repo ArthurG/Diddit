@@ -1,9 +1,13 @@
 from . import message_handler
 from . import message_sender
 from . import feedparse_controller
+from .dist import dist
+from ..models import Survey
+
 
 #Routes the messaging event to the correct handler to handle the message
 def route(messaging_event):
+    
     if not messaging_event:  # someone sent us a message
         return
 
@@ -35,6 +39,13 @@ def get_location(msg):
     return False
 
 def start_survey(msg, sender):
+    loc = get_location(msg)
+    allSurveys = Survey.query.all()
+    allSurveys = [i for i in allSurveys if dist(loc['long'], loc['lat'], i.user.lng, i.user.lat) <= 0.5]
+    if len(allSurveys) == 0:
+        message_sender.text_message(sender, "I do not have a survey for you at the moment. Please make sure you're within distance of a participating store")
+    else:
+        message_sender.text_message(sender, allSurveys[0].questions[0].questionName)
     print("starting survey")
 
 def process_answer(msg, sender):
