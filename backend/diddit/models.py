@@ -11,6 +11,7 @@ class User(db.Model):
     lng = db.Column(db.Float(500), nullable = True)
     username = db.Column(db.String(500), nullable = False)
     password = db.Column(db.String(500), nullable = False)
+
     def __init__(self, location, username, password):
         self.location = location
         data={'address':location}
@@ -21,4 +22,5 @@ class User(db.Model):
         self.lng = latlng['lng']
         self.username = username
         self.password = password
+
 db.create_all()
