@@ -81,6 +81,7 @@ def surveys():
 	if( 'username' in data ) and ( 'surveyname' in data ):
 
 		Users = User.query.all()
+		userName = data['username']
 		Users = [i for i in Users if i.username == userName]
 
 		surveyID = Users[0].id
@@ -88,18 +89,17 @@ def surveys():
 		name = data['surveyname']
 		
 		tempSurvey = Survey(name, surveyID)
-		sID = tempSurvey.id
 		db.session.add(tempSurvey)
 		db.session.commit()
+		sID = tempSurvey.id
 
 		if ('questions' in data):
 			for q in data['questions']:
 				tempQuestion = q['question']
 				tempType = q['type']
-				Surveyquestion(tempQuestion, tempType, sID)
-
-	
-	
+				tempQuestion = Surveyquestion(tempQuestion, tempType, sID)
+				db.session.add(tempQuestion)
+				db.session.commit()
 
 	return "ok", 200 
 
