@@ -5,7 +5,9 @@ import { Login } from './components/layouts/login-layout.jsx';
 
 export default(
     <Router history={browserHistory}>
-    
+        <Route component={App}>
+             <Route path="/" component={Login} />
+        </Route>
     </Router>
 
 );
