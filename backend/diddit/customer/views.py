@@ -1,5 +1,8 @@
 from flask import request
 import sys
+from ..models import Survey
+from ..models import Surveyquestion
+from ..models import Surveyquestionanswer
 from ..models import User
 from flask_sqlalchemy import SQLAlchemy
 import json 
@@ -20,7 +23,9 @@ def login():
     userName = data['username']
     passWord = data['password']
 
-    Users = User.query.all().filter(User.username == userName)
+    Users = User.query.all() # .filter(User.username == userName)
+
+    Users = [i for i in Users if i.username == userName]
 
     for aUser in Users:
     	if aUser.password == passWord:
@@ -43,12 +48,15 @@ def signup():
     	userName = data['username']
     	password = data['password']
     	
-    	Users = User.query.all().filter(User.username == userName)
+    	Users = User.query.all()
+
+    	Users = [i for i in Users if i.username == userName]
+
     	for aUser in Users:
-    		if (aUser.username == userName) and (aUser.storename == storename):
+    		if (aUser.username == userName) and (aUser.store_name == storename):
     			return "user already registered", 400
 		
-    	temp = User(location, storename, userName, password)
+    	temp = models.User(location, storename, userName, password)
     	db.session.add(temp)
     	db.session.commit()
     	return "ok", 200
