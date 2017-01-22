@@ -14,11 +14,6 @@ constructor(props) {
 
 
   handleSubmit(event) {
-   // alert('Your username is: ' + this.state.username);
-   console.log("fart: " + this.state.username);
-   console.log("fart " + this.state.password);
-    
-  
     axios.post('http://localhost:5000/login', {
         username: this.state.username,
         password: this.state.password,
@@ -39,19 +34,9 @@ constructor(props) {
 
 
 
-   /* LoginService.login(this.state.username, this.state.password)
-        .then(function(response) {
-         //   this.state.response = response;
-            alert(response.data);
-        })
-        .catch(function(error) {
-           // this.state.error = error;
-            alert(error);
-       });
 
     
     event.preventDefault();
-    */
   }
 
 

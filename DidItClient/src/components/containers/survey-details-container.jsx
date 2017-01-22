@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import LoginService from '../../services/login-service.js';
 import axios from 'axios';
 
+var Router = require('react-router');
+
+
 class SurveyDetailsContainer extends React.Component {
 
 constructor(props) {
@@ -10,7 +13,22 @@ constructor(props) {
     this.surveyAnswerRate = this.surveyAnswerRate.bind(this);
     this.state = {surveyQuestionsAndAssociatedAnswers: [] , enabled: {}};
     this.toggle = this.toggle.bind(this);
+
+    this.backToSurveys = this.backToSurveys.bind(this);
+    this.backToHome = this.backToHome.bind(this);
+      
 };
+
+
+ backToSurveys(){
+      Router.browserHistory.push('/view/' + this.props.params.username);
+  }
+
+ backToHome(){
+      Router.browserHistory.push('/profile/' + this.props.params.username);
+  }
+
+
 
 surveyAnswerRate(user, questionName, answer, rate){
   console.log(this.state.surveyQuestionsAndAssociatedAnswers[0]);
@@ -20,7 +38,7 @@ surveyAnswerRate(user, questionName, answer, rate){
 
 
 axios
-  .get('http://localhost:5000/answers?username=' + this.props.username + '&surveyname=' + this.props.surveyname)
+  .get('http://localhost:5000/answers?username=' + this.props.params.username + '&surveyname=' + this.props.params.surveyname)
   .then(response => {
     this.setState({surveyQuestionsAndAssociatedAnswers: response.data});
 
@@ -88,14 +106,15 @@ axios
     console.log("THIS IS ROWS" + rows);
 
 
-
-
-
  return (
+    <div>
      <div className="container">
-     <div> Your Surveys: </div>
+     <div> Your Survey Questions: </div>
      <div> {rows} </div>
      <div className="list-group">
+     </div>
+        <button className="" onClick={() => this.backToHome()}> Back to Home! </button>
+        <button className="" onClick={() => this.backToSurveys()}> Back to Surveys! </button>
      </div>
      </div>
     );
