@@ -19,6 +19,8 @@ def route(messaging_event):
 
     if get_location(messaging_event['message']) and is_not_in_survey(sender_id) and should_get_new_survey(messaging_event['message'], sender_id):
         start_survey(messaging_event['message'], sender_id)
+    elif get_location(messaging_event['message']) and is_not_in_survey(sender_id):
+        already_completed_survey(sender_id)
     elif did_answer_question(messaging_event['message'], sender_id):
         process_answer(messaging_event['message'], sender_id)
         send_next_question(sender_id)
@@ -51,6 +53,10 @@ def get_location(msg):
         #returns {'lat': xxx, 'long': xxx}
     return False
 
+def already_completed_survey(sender_id):
+    message = "Sorry, you already completed this survey"
+    message_sender.text_message(sender_id, message)
+    print("already completed")
 
 def start_survey(msg, sender):
     loc = get_location(msg)
@@ -59,6 +65,9 @@ def start_survey(msg, sender):
     if len(allSurveys) == 0:
         message_sender.text_message(sender, "I do not have a survey for you at the moment. Please make sure you're within distance of a participating location")
     else:
+        storename = allSurveys[0].user.store_name
+        message = "You are now filling out the survey for '{}'".format(storename)
+        message_sender.text_message(sender, message)
         start_questioning(sender, allSurveys[0])
     print("starting survey")
 
@@ -66,6 +75,8 @@ def should_get_new_survey(msg, sender):
     loc = get_location(msg)
     allSurveys = Survey.query.all()
     allSurveys = [i for i in allSurveys if dist(loc['long'], loc['lat'], i.user.lng, i.user.lat) <= 0.5]
+    if len(allSurveys) == 0:
+        return False
     survey = allSurveys[0]
     question0=survey.questions[0]
     surveyState = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=2).filter_by(questionId=question0.id).first()
@@ -101,7 +112,7 @@ def send_next_question(sender):
             message_sender.text_message(sender, "Here is your QR code for your discount!")
             now = datetime.datetime.now()
             random.seed(now.microsecond)
-            QR = random.range(0,10000)
+            QR = random.randint(0,10000)
             message_sender.send_photo(sender, "https://chart.googleapis.com/chart?cht=qr&chl=" + str(QR) + "&chs=250x250&choe=UTF-8&chld=L|2")
             print("sending closing remarks")
         else:
