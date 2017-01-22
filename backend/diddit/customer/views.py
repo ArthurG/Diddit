@@ -1,42 +1,14 @@
 from flask import request
 import sys
-<<<<<<< Updated upstream
 from ..models import Survey
 from ..models import Surveyquestion
 from ..models import Surveyquestionanswer
-=======
->>>>>>> Stashed changes
 from ..models import User
 from flask_sqlalchemy import SQLAlchemy
 import json 
 import requests
 from . import customer
 from database import db
-
-
-
-
-
-@customer.route('/login', methods=['POST'])
-def login():
-	print("loggin in")
-
-	# endpoint for processing incoming messaging events
-	data = request.get_json(force=True)
-	log("incoming msg " + str(data))
-
-	userName = data['username']
-	passWord = data['password']
-
-	Users = User.query.all() # .filter(User.username == userName)
-
-	Users = [i for i in Users if i.username == userName]
-
-	for aUser in Users:
-		if aUser.password == passWord:
-			return "ok", 200
-
-	return "unauthorized", 401 
 
 
 
@@ -48,21 +20,16 @@ def login():
 # return json of answers to each question  
 @customer.route('/answers', methods=['GET'])
 def answers():
-
 	userName = request.args.get('username')
+	surveyName = request.args.get('surveyname')
 
 	Users = User.query.all()
 	Users = [i for i in Users if i.username == userName]
 	uID = Users[0].id
 
 	Surveys = Survey.query.all()
-	Surveys = [i for i in Surveys if i.user_name == uID]
-	surveyID = []
-	surveyNames = {}
-	for sID in Surveys:
-		surveyNames[sID] = sID.survey_name
-		surveyID.append(sID)
-
+	Surveys = [i for i in Surveys if i.survey_name == surveyName]
+	surveyID = Surveys[0].id
 
 	SurveyQ = Surveyquestion.query.all()
 	SurveyQ = [i for i in SurveyQ if i.survey_name == surveyID]
@@ -87,16 +54,12 @@ def answers():
 				temp.append(ans.answerString)
 				finalAns[ID] = temp
 	
-	# {1: ['5']}
 	list_of_keys = list(finalAns.keys())
 	for k in list_of_keys:
 		finalAns[questionNameDict[k]] = finalAns[k]
 		del finalAns[k]
 
-
-	return str(finalAns)
-
-
+	return json.dumps(finalAns, sort_keys=True, ensure_ascii=False, indent=2, separators=(',', ': '))
 
 
 	
@@ -108,8 +71,46 @@ def answers():
 # return json which contains survey questions 
 @customer.route('/survey', methods=['GET'])
 def survey():
-	data = request.get_json(force=True)
+	userName = request.args.get('username')
+
+	Users = User.query.all()
+	Users = [i for i in Users if i.username == userName]
+	uID = Users[0].id
+
+	Surveys = Survey.query.all()
+	Surveys = [i for i in Surveys if i.user_name == uID]
+	surveyNames = []
+	for sID in Surveys:
+		surveyNames.append(sID.survey_name)
+
+	return json.dumps(surveyNames, sort_keys=True, ensure_ascii=False, indent=2, separators=(',', ': '))
+
+
+
+
+
 	
+@customer.route('/login', methods=['POST'])
+def login():
+	print("loggin in")
+
+	# endpoint for processing incoming messaging events
+	data = request.get_json(force=True)
+	log("incoming msg " + str(data))
+
+	userName = data['username']
+	passWord = data['password']
+
+	Users = User.query.all() # .filter(User.username == userName)
+
+	Users = [i for i in Users if i.username == userName]
+
+	for aUser in Users:
+		if aUser.password == passWord:
+			return "ok", 200
+
+	return "unauthorized", 401 
+
 
 
 '''
@@ -179,32 +180,6 @@ def surveys():
 '''
 @customer.route('/signup', methods=['POST'])
 def signup():
-<<<<<<< Updated upstream
-	# endpoint for processing incoming messaging events
-	data = request.get_json(force=True)
-	log("incoming msg " + str(data))  # you may not want to log every incoming message in production, but it's good for testing
-
-	# endpoint for signups
-	if ('location' in data) and ('storename' in data) and ('username' in data) and ('password' in data):
-		location = data['location']
-		storename = data['storename']
-		userName = data['username']
-		password = data['password']
-		
-		
-		Users = User.query.all()
-
-		Users = [i for i in Users if i.username == userName]
-
-		for aUser in Users:
-			if (aUser.username == userName) and (aUser.store_name == storename):
-				return "user already registered", 400
-		
-		temp = User(location, storename, userName, password)
-		db.session.add(temp)
-		db.session.commit()
-		return "ok", 200
-=======
     # endpoint for processing incoming messaging events
     data = request.get_json(force=True)
     log("incoming msg " + str(data))  # you may not want to log every incoming message in production, but it's good for testing
@@ -217,15 +192,14 @@ def signup():
     	password = data['password']
     	
     	Users = User.query.all().filter(User.username == userName)
-    		for aUser in Users:
-    			if (aUser.username == userName) and (aUser.storename == storename):
-    				return "user already registered", 400
+    	for aUser in Users:
+    		if (aUser.username == userName) and (aUser.storename == storename):
+    			return "user already registered", 400
 		
     	temp = User(location, storename, userName, password)
     	db.session.add(temp)
     	db.session.commit()
     	return "ok", 200
->>>>>>> Stashed changes
 
 
 def log(message):  # simple wrapper for logging to stdout on heroku
