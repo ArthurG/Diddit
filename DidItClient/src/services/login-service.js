@@ -9,13 +9,13 @@ export function login(user, pass) {
 }
 
 
-export function(user, pass, storeName, address) {
-    return axios.('http://localhost:5000/signup'), {
-        username:
+/*export function(user, pass, storeName, address) {
+return axios.('http://localhost:5000/signup'), {
+    username:
 
-    }
 }
-
+}
+*/
 
 /*
 componentDidMount: function() {

@@ -3,10 +3,13 @@ import LoginService from '../../services/login-service.js';
 import axios from 'axios';
 
 class Login extends React.Component {
-  
+
 constructor(props) {
     super(props);
-    this.state = {username: '', password: '', response: null, error: null};
+    this.state = {surveyNames : []};
+
+
+
 
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
@@ -27,9 +30,7 @@ constructor(props) {
 
   handleSubmit(event) {
    // alert('Your username is: ' + this.state.username);
-   console.log("fart: " + this.state.username);
-   console.log("fart " + this.state.password);
-    
+
   /*
     axios.post('http://localhost:5000/login', {
         username: this.state.username,
@@ -44,7 +45,7 @@ constructor(props) {
         });
 
 */
-
+    axios.get()
 
 
    /* LoginService.login(this.state.username, this.state.password)
@@ -67,6 +68,10 @@ constructor(props) {
  
     return (
       <div>
+
+
+            
+
 
            <div className="grid">
           <form onSubmit={this.handleSubmit} className="form login">
