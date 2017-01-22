@@ -8,7 +8,32 @@ constructor(props) {
     super(props);
     this.state = {surveyNames : ['poop', 'peep', 'deep','poop', 'peep', 'deep','poop', 'peep', 'deep','poop', 'peep', 'deep']};
 
+
+
     this.handleSurveyClick = this.handleSurveyClick.bind(this);
+
+      
+ 
+  }
+
+    componentDidMount() {
+
+   axios.get('http://localhost:5000/survey?username='+this.props.username)       
+         .then(response => {
+           
+           console.log(response.data);
+           console.log(this.state.surveyName);
+           console.log(this.state);
+
+           this.setState({
+               surveyNames: response.data
+           });
+         }
+         );
+    }
+
+  componentWillUnmount() {
+    
   }
 
 /*
@@ -24,7 +49,7 @@ return (
 */
 
 
-  handleSurveyClick(event, surveyName) {
+  handleSurveyClick(surveyName) {
 
       console.log(surveyName);
    // alert('Your username is: ' + this.state.username);
@@ -43,7 +68,7 @@ return (
         });
 
 */
-    axios.get()
+   // axios.get()
 
 
    /* LoginService.login(this.state.username, this.state.password)
@@ -95,7 +120,7 @@ for (var i=0; i < this.state.surveyName.length; i++) {
 var rows =[];
  this.state.surveyNames.forEach((surveyName) => {
 
-        rows.push(<div className = "big-text list-group-item" id={surveyName} onClick={() => this.handleSurveyClick(this, surveyName)}> {surveyName } </div>)
+        rows.push(<div className = "big-text list-group-item" id={surveyName} onClick={() => this.handleSurveyClick(surveyName)}> {surveyName } </div>)
      });
 
  return (
