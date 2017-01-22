@@ -57,7 +57,7 @@ class Surveyquestionanswer(db.Model):
 
 class Usersurveystates(db.Model):
     id = db.Column(db.Integer, nullable=False, unique=True, primary_key=True)
-    questionState=db.Column(db.Integer, nullable=False) #0 => not asked 1 => previously asked 2 => never asked
+    questionState=db.Column(db.Integer, nullable=False) #0 => not asked 1 => previously asked 2 => properly answered
     surveyId=db.Column(db.Integer, db.ForeignKey('survey.id'), nullable=False)
     questionId=db.Column(db.Integer, db.ForeignKey('surveyquestion.id'), nullable=False)
     respondantFbId=db.Column(db.Integer, nullable=False)

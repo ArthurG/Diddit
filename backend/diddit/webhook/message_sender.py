@@ -20,6 +20,25 @@ def text_message(recipient, message):
         })
     send_message(data)
 
+def text_request_location(recipient, message):
+    data = json.dumps({
+        "recipient": {
+            "id": recipient
+            },
+        "message": {
+
+            "text": message,
+            "quick_replies" : [
+                {
+                    "content_type" :"location"   
+                }    
+            ]
+
+            }
+        })
+    send_message(data)
+
+
 def news_article(recipient, article, article_num):
     for line in article.split("\n"):
         data = json.dumps({

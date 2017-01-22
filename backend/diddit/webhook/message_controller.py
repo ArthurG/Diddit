@@ -2,7 +2,7 @@ from . import message_handler
 from . import message_sender
 from . import feedparse_controller
 from .dist import dist
-from ..models import Survey, Usersurveystates
+from ..models import Survey, Surveyquestionanswer, Usersurveystates
 from database import db
 
 
@@ -16,11 +16,13 @@ def route(messaging_event):
     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     #message_text = messaging_event["message"]["text"]  # the message's text
 
-    if get_location(messaging_event['message']):
+    if get_location(messaging_event['message']) and is_not_in_survey(sender_id):
         start_survey(messaging_event['message'], sender_id)
     elif did_answer_question(messaging_event['message'], sender_id):
         process_answer(messaging_event['message'], sender_id)
         send_next_question(sender_id)
+    else:
+        send_introduction(sender_id)
 
     if messaging_event.get("delivery"):  # delivery confirmation
         pass
@@ -32,11 +34,19 @@ def route(messaging_event):
         pass
 
 
-#Check if has location
+def is_not_in_survey(sender_id):
+    return Usersurveystates.query.filter_by(respondantFbId=sender_id).filter_by(questionState=0).first() == None
+
+
+def send_introduction(sender_id):
+    msg = "Hello! I am Diddit. I send you surveys that you can fill out for an easy discount at your current store! Send me your current location to start :)"
+    message_sender.text_request_location(sender_id, msg)
+
+#Check if msg recieved contains location data about user
 def get_location(msg):
     if msg.get('attachments', False) and msg['attachments'][0]['type'] == "location":
         return msg['attachments'][0]['payload']['coordinates']
-        #{'lat': xxx, 'long': xxx}
+        #returns {'lat': xxx, 'long': xxx}
     return False
 
 def start_survey(msg, sender):
@@ -50,7 +60,7 @@ def start_survey(msg, sender):
     print("starting survey")
 
 def start_questioning(sender, survey):
-    #db.create_all()
+    db.create_all()
     for question in survey.questions:
         tmpState = Usersurveystates(question.id, survey.id, sender)
         db.session.add(tmpState)
@@ -60,20 +70,39 @@ def start_questioning(sender, survey):
 
 
 def process_answer(msg, sender):
+    q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=1).first()
+    q1.questionState=2
+    question_answered = q1.surveyquestion
+    resp = Surveyquestionanswer(msg['text'], question_answered.id)
+    db.session.add(resp)
+    db.session.commit()
     print("Processing answer")
 
 def send_next_question(sender):
     q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=0).first()
-    q1.questionState = 1
-    db.session.commit()
-    message_sender.text_message(sender, q1.surveyquestion.questionName)
-    print("Starting questioning")
+    if q1 == None:
+        #it might be because the person finished filling out all the surveys
+        q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=2).first()
+        if q1 != None:
+            message_sender.text_message(sender, "Thanks for filling out our survey")
+            print("sending closing remarks")
+        else:
+            print("sending no remarks")
+    else:
+        q1.questionState = 1
+        db.session.commit()
+        message_sender.text_message(sender, q1.surveyquestion.questionName)
+        print("sending next question")
 
 def did_answer_question(msg, sender):
-    q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=0).first()
-    q1.questionState = 1
-    db.session.commit()
-    message_sender.text_message(sender, q1.surveyquestion.questionName)
+    q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=1).first()
+    txt = msg.get('text', False)
+    print("did answer question", q1, txt)
+    return q1 and txt
+
+    #q1.questionState = 1
+    #db.session.commit()
+    #message_sender.text_message(sender, q1.surveyquestion.questionName)
     print("Answering question")
 
         
