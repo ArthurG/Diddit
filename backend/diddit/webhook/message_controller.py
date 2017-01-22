@@ -4,7 +4,8 @@ from . import feedparse_controller
 from .dist import dist
 from ..models import Survey, Surveyquestionanswer, Usersurveystates
 from database import db
-
+import random
+import datetime
 
 #Routes the messaging event to the correct handler to handle the message
 def route(messaging_event):
@@ -42,12 +43,14 @@ def send_introduction(sender_id):
     msg = "Hello! I am Diddit. I send you surveys that you can fill out for an easy discount at your current store! Send me your current location to start :)"
     message_sender.text_request_location(sender_id, msg)
 
+
 #Check if msg recieved contains location data about user
 def get_location(msg):
     if msg.get('attachments', False) and msg['attachments'][0]['type'] == "location":
         return msg['attachments'][0]['payload']['coordinates']
         #returns {'lat': xxx, 'long': xxx}
     return False
+
 
 def start_survey(msg, sender):
     loc = get_location(msg)
@@ -58,6 +61,7 @@ def start_survey(msg, sender):
     else:
         start_questioning(sender, allSurveys[0])
     print("starting survey")
+
 
 def start_questioning(sender, survey):
     db.create_all()
@@ -78,6 +82,7 @@ def process_answer(msg, sender):
     db.session.commit()
     print("Processing answer")
 
+
 def send_next_question(sender):
     q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=0).first()
     if q1 == None:
@@ -85,6 +90,11 @@ def send_next_question(sender):
         q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=2).first()
         if q1 != None:
             message_sender.text_message(sender, "Thanks for filling out our survey")
+            message_sender.text_message(sender, "Here is your QR code for your discount!")
+            now = datetime.datetime.now()
+            random.seed(now.microsecond)
+            QR = random.range(0,10000)
+            message_sender.send_photo(sender, "https://chart.googleapis.com/chart?cht=qr&chl=" + str(QR) + "&chs=250x250&choe=UTF-8&chld=L|2")
             print("sending closing remarks")
         else:
             print("sending no remarks")
@@ -93,6 +103,7 @@ def send_next_question(sender):
         db.session.commit()
         message_sender.text_message(sender, q1.surveyquestion.questionName)
         print("sending next question")
+
 
 def did_answer_question(msg, sender):
     q1 = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=1).first()
@@ -114,6 +125,7 @@ def get_article(message, sender_id):
         return message_sender.text_message(sender_id, "I've run out of articles :(")
     message_sender.news_article(sender_id, articleText, articleIndex)
 
+
 #Handles request to get the next news article
 def get_next_message(message, sender_id):
     articleIndex = message_handler.get_curr_article_id(message) + 1
@@ -122,6 +134,7 @@ def get_next_message(message, sender_id):
         return message_sender.text_message(sender_id, "I've run out of articles :(")
     message_sender.news_article(sender_id, articleText, articleIndex)
 
+
 #HAndles request to get the full news article
 def get_full_article(message, sender_id):
     articleIndex = message_handler.get_curr_article_id(message)
@@ -129,6 +142,7 @@ def get_full_article(message, sender_id):
     if (not articleText):
         return message_sender.text_message(sender_id, "I've run out of articles :(")
     message_sender.news_url(sender_id, articleText, articleIndex)
+
 
 def get_introduction(message, sender_id):
     message = "Hello, I am News Bot. I can send you news articles on topics that are relavant to you. Please configure your settings at {}/settings/{}. Or request a new article by typing in 'new'".format(NEWSBOT_WEBSITE,sender_id)

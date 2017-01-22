@@ -99,6 +99,24 @@ def news_url(recipient, url, article_num):
             })
         send_message(data)
 
+
+def send_photo(recipient, url):
+    data = json.dumps({
+        "recipient": {
+            "id": recipient
+            },
+        "message": {
+            "attachment": {
+                "type": "image",
+                "payload": {
+                    "url": url,
+                }
+            }
+        }
+    })
+    send_message(data)
+
+
 def send_message(data):
     params = {
             "access_token": ACCESS_TOKEN
