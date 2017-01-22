@@ -1,14 +1,19 @@
 from flask import request
 import sys
+<<<<<<< Updated upstream
 from ..models import Survey
 from ..models import Surveyquestion
 from ..models import Surveyquestionanswer
+=======
+>>>>>>> Stashed changes
 from ..models import User
 from flask_sqlalchemy import SQLAlchemy
 import json 
 import requests
 from . import customer
 from database import db
+
+
 
 
 
@@ -174,6 +179,7 @@ def surveys():
 '''
 @customer.route('/signup', methods=['POST'])
 def signup():
+<<<<<<< Updated upstream
 	# endpoint for processing incoming messaging events
 	data = request.get_json(force=True)
 	log("incoming msg " + str(data))  # you may not want to log every incoming message in production, but it's good for testing
@@ -198,6 +204,28 @@ def signup():
 		db.session.add(temp)
 		db.session.commit()
 		return "ok", 200
+=======
+    # endpoint for processing incoming messaging events
+    data = request.get_json(force=True)
+    log("incoming msg " + str(data))  # you may not want to log every incoming message in production, but it's good for testing
+
+    # endpoint for signups
+    if ('location' in data) and ('storename' in data) and ('username' in data) and ('password' in data):
+    	location = data['location']
+    	storename = data['storename']
+    	userName = data['username']
+    	password = data['password']
+    	
+    	Users = User.query.all().filter(User.username == userName)
+    		for aUser in Users:
+    			if (aUser.username == userName) and (aUser.storename == storename):
+    				return "user already registered", 400
+		
+    	temp = User(location, storename, userName, password)
+    	db.session.add(temp)
+    	db.session.commit()
+    	return "ok", 200
+>>>>>>> Stashed changes
 
 
 def log(message):  # simple wrapper for logging to stdout on heroku
