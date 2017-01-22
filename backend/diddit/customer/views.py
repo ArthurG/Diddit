@@ -1,14 +1,19 @@
 from flask import request
 import sys
+<<<<<<< Updated upstream
 from ..models import Survey
 from ..models import Surveyquestion
 from ..models import Surveyquestionanswer
+=======
+>>>>>>> Stashed changes
 from ..models import User
 from flask_sqlalchemy import SQLAlchemy
 import json 
 import requests
 from . import customer
 from database import db
+
+
 
 
 
@@ -43,30 +48,53 @@ def login():
 # return json of answers to each question  
 @customer.route('/answers', methods=['GET'])
 def answers():
-	data = request.get_json(force=True)
 
-	if('username' in data ):
+	userName = request.args.get('username')
 
-		Users = User.query.all()
-		userName = data['username']
-		Users = [i for i in Users if i.username == userName]
-		uID = Users[0].id
+	Users = User.query.all()
+	Users = [i for i in Users if i.username == userName]
+	uID = Users[0].id
 
-		Surveys = Survey.query.all()
-		Surveys = [i for i in Surveys if i.user_name == uID]
-		surveyID = Surveys[0].id
-		
-		SurveyQ = Surveyquestion.query.all()
-		SurveyQ = [i for i in SurveyQ if i.survey_name == surveyID]
-		idS = []
-		for a in SurveyQ:
-			idS.append(a.id)
-
-		Answers = Surveyquestionanswer.query.all()
-		# Answers = [b for b in Answers if b.Surveyquestion_name == ] 
+	Surveys = Survey.query.all()
+	Surveys = [i for i in Surveys if i.user_name == uID]
+	surveyID = []
+	surveyNames = {}
+	for sID in Surveys:
+		surveyNames[sID] = sID.survey_name
+		surveyID.append(sID)
 
 
+	SurveyQ = Surveyquestion.query.all()
+	SurveyQ = [i for i in SurveyQ if i.survey_name == surveyID]
 
+	idS = []
+	questionNameDict = {}
+	questionTypeDict = {}
+	for a in SurveyQ:
+		questionNameDict[a.id] = a.questionName
+		questionTypeDict[a.id] = a.questionType
+		idS.append(a.id)
+
+	Answers = Surveyquestionanswer.query.all()	
+	finalAns = {}
+	# surveys
+	# 	questions
+	#		 answers 
+	for ID in idS:
+		temp = []
+		for ans in Answers:
+			if ans.surveyquestion_name == ID:
+				temp.append(ans.answerString)
+				finalAns[ID] = temp
+	
+	# {1: ['5']}
+	list_of_keys = list(finalAns.keys())
+	for k in list_of_keys:
+		finalAns[questionNameDict[k]] = finalAns[k]
+		del finalAns[k]
+
+
+	return str(finalAns)
 
 
 
@@ -151,6 +179,7 @@ def surveys():
 '''
 @customer.route('/signup', methods=['POST'])
 def signup():
+<<<<<<< Updated upstream
 	# endpoint for processing incoming messaging events
 	data = request.get_json(force=True)
 	log("incoming msg " + str(data))  # you may not want to log every incoming message in production, but it's good for testing
@@ -175,6 +204,28 @@ def signup():
 		db.session.add(temp)
 		db.session.commit()
 		return "ok", 200
+=======
+    # endpoint for processing incoming messaging events
+    data = request.get_json(force=True)
+    log("incoming msg " + str(data))  # you may not want to log every incoming message in production, but it's good for testing
+
+    # endpoint for signups
+    if ('location' in data) and ('storename' in data) and ('username' in data) and ('password' in data):
+    	location = data['location']
+    	storename = data['storename']
+    	userName = data['username']
+    	password = data['password']
+    	
+    	Users = User.query.all().filter(User.username == userName)
+    		for aUser in Users:
+    			if (aUser.username == userName) and (aUser.storename == storename):
+    				return "user already registered", 400
+		
+    	temp = User(location, storename, userName, password)
+    	db.session.add(temp)
+    	db.session.commit()
+    	return "ok", 200
+>>>>>>> Stashed changes
 
 
 def log(message):  # simple wrapper for logging to stdout on heroku
