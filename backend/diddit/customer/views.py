@@ -43,30 +43,53 @@ def login():
 # return json of answers to each question  
 @customer.route('/answers', methods=['GET'])
 def answers():
-	data = request.get_json(force=True)
 
-	if('username' in data ):
+	userName = request.args.get('username')
 
-		Users = User.query.all()
-		userName = data['username']
-		Users = [i for i in Users if i.username == userName]
-		uID = Users[0].id
+	Users = User.query.all()
+	Users = [i for i in Users if i.username == userName]
+	uID = Users[0].id
 
-		Surveys = Survey.query.all()
-		Surveys = [i for i in Surveys if i.user_name == uID]
-		surveyID = Surveys[0].id
-		
-		SurveyQ = Surveyquestion.query.all()
-		SurveyQ = [i for i in SurveyQ if i.survey_name == surveyID]
-		idS = []
-		for a in SurveyQ:
-			idS.append(a.id)
-
-		Answers = Surveyquestionanswer.query.all()
-		# Answers = [b for b in Answers if b.Surveyquestion_name == ] 
+	Surveys = Survey.query.all()
+	Surveys = [i for i in Surveys if i.user_name == uID]
+	surveyID = []
+	surveyNames = {}
+	for sID in Surveys:
+		surveyNames[sID] = sID.survey_name
+		surveyID.append(sID)
 
 
+	SurveyQ = Surveyquestion.query.all()
+	SurveyQ = [i for i in SurveyQ if i.survey_name == surveyID]
 
+	idS = []
+	questionNameDict = {}
+	questionTypeDict = {}
+	for a in SurveyQ:
+		questionNameDict[a.id] = a.questionName
+		questionTypeDict[a.id] = a.questionType
+		idS.append(a.id)
+
+	Answers = Surveyquestionanswer.query.all()	
+	finalAns = {}
+	# surveys
+	# 	questions
+	#		 answers 
+	for ID in idS:
+		temp = []
+		for ans in Answers:
+			if ans.surveyquestion_name == ID:
+				temp.append(ans.answerString)
+				finalAns[ID] = temp
+	
+	# {1: ['5']}
+	list_of_keys = list(finalAns.keys())
+	for k in list_of_keys:
+		finalAns[questionNameDict[k]] = finalAns[k]
+		del finalAns[k]
+
+
+	return str(finalAns)
 
 
 
