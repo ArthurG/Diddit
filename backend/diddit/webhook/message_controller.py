@@ -17,7 +17,7 @@ def route(messaging_event):
     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     #message_text = messaging_event["message"]["text"]  # the message's text
 
-    if get_location(messaging_event['message']) and is_not_in_survey(sender_id):
+    if get_location(messaging_event['message']) and is_not_in_survey(sender_id) and should_get_new_survey(messaging_event['message'], sender_id):
         start_survey(messaging_event['message'], sender_id)
     elif did_answer_question(messaging_event['message'], sender_id):
         process_answer(messaging_event['message'], sender_id)
@@ -62,6 +62,14 @@ def start_survey(msg, sender):
         start_questioning(sender, allSurveys[0])
     print("starting survey")
 
+def should_get_new_survey(msg, sender):
+    loc = get_location(msg)
+    allSurveys = Survey.query.all()
+    allSurveys = [i for i in allSurveys if dist(loc['long'], loc['lat'], i.user.lng, i.user.lat) <= 0.5]
+    survey = allSurveys[0]
+    question0=survey.questions[0]
+    surveyState = Usersurveystates.query.filter_by(respondantFbId=sender).filter_by(questionState=2).filter_by(questionId=question0.id).first()
+    return surveyState == None
 
 def start_questioning(sender, survey):
     db.create_all()
