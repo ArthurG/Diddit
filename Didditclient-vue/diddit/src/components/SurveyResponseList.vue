@@ -1,7 +1,13 @@
 <template>
   <div class="SurveyResponseList">
+    <h2>GEEE</h2>
     <ul>
-      <li v-for="question in questions"> {{question.key}} <p v-for="answer in question.val"> {{answer}}</p></li>
+      <li v-for="question in questions" v-on:click="clickQuestion(question)">
+        {{question.key}} 
+        <div v-for="answer in question.val" v-if="question.show">
+          {{answer}}
+        </div>
+      </li>
     </ul>
   </div>
 </template>
@@ -9,27 +15,29 @@
 <script>
 export default {
   name: 'hello',
-  questions: [],
   data () {
     return {
+      questions: [],
       msg: 'Welcome to Your Vue.js App'
     }
   },
   methods: {
+    clickQuestion: function(e, f){
+      console.log(e);
+      e.show=!e.show;
+    }
   },
   created: function(){
     this.$http.get('http://localhost:5000/answers?username=Harman&surveyname=Test1').then(
       response => {
         var q = [];
         var question = JSON.parse(response.data);
-        console.log(Object.keys(question));
         var keys = Object.keys(question);
         keys.forEach(key=>
-          q.push({"key": key, "val": question[key]})
-        );
+            q.push({"key": key, "val": question[key], "show": true})
+            );
         this.questions = q;
         console.log(this.questions);
-
       }, response=>{
         console.log("err");
       }
