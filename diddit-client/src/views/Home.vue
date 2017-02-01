@@ -4,6 +4,7 @@
     <MainBanner></MainBanner>
     <AnalyticsBanner></AnalyticsBanner>
     <ContactBanner></ContactBanner>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -12,6 +13,7 @@ import TopNav from './../components/TopNav'
 import MainBanner from './../components/MainBanner'
 import AnalyticsBanner from './../components/AnalyticsBanner'
 import ContactBanner from './../components/ContactBanner'
+import Footer from './../components/Footer'
 
 export default {
   name: 'Home',
@@ -19,7 +21,8 @@ export default {
     TopNav,
     MainBanner,
     AnalyticsBanner,
-    ContactBanner
+    ContactBanner,
+    Footer
   }
 }
 </script>
