@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './views/App'
 import Home from './views/Home'
+import Signup from './views/Signup'
 
 import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
@@ -15,7 +16,8 @@ const router = new VueRouter({
   base: __dirname,
   routes: [
   {path: '/', component: App},
-  {path: '/home', component: Home}
+  {path: '/home', component: Home},
+  {path: '/signup', component: Signup}
   ]
 })
 

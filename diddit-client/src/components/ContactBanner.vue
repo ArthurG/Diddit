@@ -52,7 +52,6 @@ button{
   padding: 0.5em 2em;
   background-color: #efefef;
   border: None;
-
 }
 
 .message{
