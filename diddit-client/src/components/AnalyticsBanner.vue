@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <div class="container">
+    <div class="container" id="analytics">
       <h1>
         Your storefront console
       </h1>

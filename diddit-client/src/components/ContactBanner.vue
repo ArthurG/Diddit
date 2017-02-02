@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" id="contact">
     <h1>
       Get In Touch
     </h1>

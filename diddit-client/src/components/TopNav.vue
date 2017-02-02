@@ -7,20 +7,14 @@
       </div>
       <div class="collapse navbar-collapse navbar-menubuilder">
         <ul class="nav navbar-nav navbar-left">
-          <li><a href="/">Home</a>
-          </li>
-          <li><a href="/products">About</a>
-          </li>
-          <li><a href="/about-us">Analytics</a>
-          </li>
-          <li><a href="/contact">Contact</a>
-          </li>
+          <li><router-link to="/home">Home</router-link></li>
+          <li><router-link to="/home#about">About</router-link></li>
+          <li><router-link to="/home#analytics">Analytics</router-link></li>
+          <li><router-link to="/home#contact">Contact</router-link></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="/about-us">Signup</a>
-          </li>
-          <li><a href="/contact">Login</a>
-          </li>
+          <li><router-link to="/signup">Signup</router-link></li>
+          <li><router-link to="/login">Login</router-link></li>
         </ul>
 
       </div>

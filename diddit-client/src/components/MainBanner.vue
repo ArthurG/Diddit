@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" id="about">
     <div class="phone col-lg-4 col-md-6">
       <img src="../assets/phone.png">
     </div>
