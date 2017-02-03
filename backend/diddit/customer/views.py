@@ -183,6 +183,8 @@ def signup():
     # endpoint for processing incoming messaging events
     data = request.get_json(force=True)
     log("incoming msg " + str(data))  # you may not want to log every incoming message in production, but it's good for testing
+    data['location']='none'
+    data['storename']='none'
 
     # endpoint for signups
     if ('location' in data) and ('storename' in data) and ('username' in data) and ('password' in data):
@@ -200,6 +202,7 @@ def signup():
     	db.session.add(temp)
     	db.session.commit()
     	return "ok", 200
+    return "failure to register", 400
 
 
 def log(message):  # simple wrapper for logging to stdout on heroku
